@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { useAgendaItems, useDataOperations } from '@/hooks/useData';
 import { StatusLabel } from '@/components/shared/StatusLabel';
 import { Badge } from '@/components/shared/Badge';
-import type { ActionType } from '@/lib/types';
+import type { ActionType, AgendaItem } from '@/lib/types';
 
 const MEETING_ID = 'mtg_apr_2026';
 
@@ -28,6 +29,11 @@ export function AgendaEditor() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItem, setNewItem] = useState<NewItemForm>(emptyForm);
 
+  // Drag state
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const dragCounter = useRef(0);
+
   function startEdit(id: string, currentTitle: string) {
     setEditingId(id);
     setEditTitle(currentTitle);
@@ -46,21 +52,70 @@ export function AgendaEditor() {
     setEditTitle('');
   }
 
-  function handleMoveUp(index: number) {
-    if (index <= 0) return;
-    const current = items[index];
-    const above = items[index - 1];
-    updateAgendaItem(current.id, { sortOrder: above.sortOrder });
-    updateAgendaItem(above.id, { sortOrder: current.sortOrder });
+  function reorderItems(fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) return;
+
+    // Build new order and reassign sortOrders
+    const ordered = [...items];
+    const [moved] = ordered.splice(fromIndex, 1);
+    ordered.splice(toIndex, 0, moved);
+
+    // Update sortOrder for all affected items
+    ordered.forEach((item, i) => {
+      const newSort = (i + 1) * 10;
+      if (item.sortOrder !== newSort) {
+        updateAgendaItem(item.id, { sortOrder: newSort });
+      }
+    });
   }
 
-  function handleMoveDown(index: number) {
-    if (index >= items.length - 1) return;
-    const current = items[index];
-    const below = items[index + 1];
-    updateAgendaItem(current.id, { sortOrder: below.sortOrder });
-    updateAgendaItem(below.id, { sortOrder: current.sortOrder });
-  }
+  const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+    // Make the drag image slightly transparent
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  }, []);
+
+  const handleDragEnd = useCallback((e: React.DragEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+    }
+    setDragIndex(null);
+    setDropIndex(null);
+    dragCounter.current = 0;
+  }, []);
+
+  const handleDragEnter = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    dragCounter.current++;
+    setDropIndex(index);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setDropIndex(null);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent, toIndex: number) => {
+    e.preventDefault();
+    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (!isNaN(fromIndex)) {
+      reorderItems(fromIndex, toIndex);
+    }
+    setDragIndex(null);
+    setDropIndex(null);
+    dragCounter.current = 0;
+  }, [items]);
 
   function handleAddItem() {
     if (!newItem.title.trim()) return;
@@ -80,8 +135,35 @@ export function AgendaEditor() {
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="flex items-center gap-3 py-2.5 border-b border-border-light"
+            draggable={editingId !== item.id}
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragEnd={handleDragEnd}
+            onDragEnter={(e) => handleDragEnter(e, index)}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, index)}
+            className={cn(
+              'flex items-center gap-3 py-2.5 border-b border-border-light transition-colors duration-150',
+              dragIndex === index && 'opacity-50',
+              dropIndex === index && dragIndex !== index && 'border-t-2 border-t-ember',
+            )}
           >
+            {/* Drag handle */}
+            <button
+              className="shrink-0 cursor-grab active:cursor-grabbing text-ink-faint hover:text-ink-muted p-0.5 touch-none"
+              aria-label="Drag to reorder"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+                <circle cx="3" cy="3" r="1.5" />
+                <circle cx="9" cy="3" r="1.5" />
+                <circle cx="3" cy="8" r="1.5" />
+                <circle cx="9" cy="8" r="1.5" />
+                <circle cx="3" cy="13" r="1.5" />
+                <circle cx="9" cy="13" r="1.5" />
+              </svg>
+            </button>
+
             <span className="font-mono text-[11px] text-ink-muted w-8 shrink-0">
               {item.itemNumber}
             </span>
@@ -131,25 +213,6 @@ export function AgendaEditor() {
 
             <div className="shrink-0 w-20">
               <StatusLabel status={item.paperStatus} />
-            </div>
-
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                onClick={() => handleMoveUp(index)}
-                disabled={index === 0}
-                className="text-[11px] text-ink-muted hover:text-ink disabled:text-ink-faint disabled:cursor-not-allowed px-1"
-                aria-label="Move up"
-              >
-                &#9650;
-              </button>
-              <button
-                onClick={() => handleMoveDown(index)}
-                disabled={index === items.length - 1}
-                className="text-[11px] text-ink-muted hover:text-ink disabled:text-ink-faint disabled:cursor-not-allowed px-1"
-                aria-label="Move down"
-              >
-                &#9660;
-              </button>
             </div>
           </div>
         ))}
