@@ -12,16 +12,29 @@ Board governance platform. AI-native alternative to Diligent/Boardvantage. Repla
 - **Backend (Tier 2 / full):** Supabase (Postgres, Auth, Storage, RLS). Switch via `NEXT_PUBLIC_DATA_SOURCE=mock|supabase`.
 - **Deploy:** Vercel
 
+## Phase 1 Status: COMPLETE
+
+Demo deployed to Vercel: https://boardiq-rosy.vercel.app
+- Director Meeting Briefing (prep + day modes) with grouped agenda, IQ analysis, progress tracking
+- Secretariat Dashboard with metric cards, paper tracking, board readiness, agenda editor
+- Executive Briefing with "What the Board May Ask" IQ framing
+- Real AI chat via Anthropic API (streaming, scoped per agenda item)
+- Role switcher for all 11 demo users
+
 ## Key Docs (read before building)
 
 All in `/docs`:
-- `screen-specs.md` — Every screen, every state, every interaction
-- `design-brief.md` — Visual language, color system, anti-AI principles, typography
-- `data-model.md` — Database schema, RLS policies, key queries
-- `dev-approach.md` — Two-tier architecture, file structure, data hook interface
-- `mock-data.ts` — Complete demo data for Coastal Health Foundation
-- `backlog.md` — Deferred features
-- `work-plan.md` — Build sequence
+- `boardiq-screen-specs.md` — Every screen, every state, every interaction
+- `boardiq-design-brief.md` — Visual language, color system, anti-AI principles, typography
+- `boardiq-data-model.md` — Database schema, RLS policies, key queries
+- `boardiq-dev-approach.md` — Two-tier architecture, file structure, data hook interface
+- `mock-data.js` — Complete demo data for Coastal Health Foundation (also typed in src/lib/mock-data.ts)
+- `security-decisions.md` — All security/privacy design choices with rationale
+
+## AI Prompts
+
+All in `/prompts/`:
+- `iq-chat-system.md` — IQ chat system prompt for Anthropic API
 
 ## Core Concepts
 
