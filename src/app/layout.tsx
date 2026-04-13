@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Hanken_Grotesk } from "next/font/google";
+import { RoleProvider } from "@/contexts/RoleContext";
+import { TopBar } from "@/components/layout/TopBar";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -33,7 +35,12 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSerif.variable} ${hankenGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <RoleProvider>
+          <TopBar />
+          <main className="flex-1">{children}</main>
+        </RoleProvider>
+      </body>
     </html>
   );
 }
