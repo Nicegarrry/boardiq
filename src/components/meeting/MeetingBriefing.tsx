@@ -190,6 +190,21 @@ export function MeetingBriefing() {
 
               <ModeToggle mode={mode} onModeChange={setMode} />
 
+              {mode === 'prep' && (
+                <PrepProgress
+                  meetingId={MEETING_ID}
+                  userId={mockUserId}
+                  agendaItems={agendaItems}
+                  daysUntil={meeting.daysUntil}
+                />
+              )}
+
+              <BriefingCard
+                meetingId={MEETING_ID}
+                userId={mockUserId}
+                mode={mode}
+              />
+
               <ActionItemList actionItems={actionItems} />
 
               {/* Grouped agenda sections */}
