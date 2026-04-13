@@ -1,15 +1,19 @@
+'use client'
+
+import { useRole } from '@/hooks/useRole'
+import { MockDataProvider } from '@/hooks/useMockData'
+import { MeetingBriefing } from '@/components/meeting/MeetingBriefing'
+import { SecretariatDashboard } from '@/components/secretariat/SecretariatDashboard'
+import { ExecBriefing } from '@/components/executive/ExecBriefing'
+
 export default function Home() {
+  const { currentRole } = useRole()
+
   return (
-    <main className="flex-1 bg-paper px-6 pt-9">
-      <div className="content-width">
-        <h1>
-          <span className="font-display">Board</span>
-          <span className="font-display italic text-ember">IQ</span>
-        </h1>
-        <p className="mt-4 text-ink-secondary">
-          Board governance platform. Loading...
-        </p>
-      </div>
-    </main>
-  );
+    <MockDataProvider>
+      {currentRole === 'director' && <MeetingBriefing />}
+      {currentRole === 'secretariat' && <SecretariatDashboard />}
+      {currentRole === 'executive' && <ExecBriefing />}
+    </MockDataProvider>
+  )
 }
