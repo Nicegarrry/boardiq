@@ -21,6 +21,29 @@ Demo deployed to Vercel: https://boardiq-rosy.vercel.app
 - Real AI chat via Anthropic API (streaming, scoped per agenda item)
 - Role switcher for all 11 demo users
 
+## Phase 2 Status: COMPLETE
+
+Supabase backend ready for local Docker development:
+- 32-table schema with all constraints, indexes, triggers (`supabase/migrations/`)
+- RLS policies on all tables: org isolation, agenda visibility chain, notebook privacy, vote immutability, audit append-only
+- Complete seed data (1157 lines SQL matching mock dataset)
+- Supabase data hooks (`useSupabaseData.ts`) — 10 read + 8 write, snake-to-camelCase mapping
+- Magic link auth with middleware (bypassed in demo mode)
+- Document storage with signed URLs
+- AI pipeline: document analysis → IQ generation → briefing narratives (`/api/iq-process`)
+- Security decisions SD-001 through SD-015 documented
+
+### To run locally with Supabase:
+```bash
+npm run db:start          # Start local Supabase (Docker)
+npm run db:reset          # Apply migrations + seed
+# Set in .env.local:
+# NEXT_PUBLIC_DATA_SOURCE=supabase
+# NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=<from supabase start output>
+npm run dev
+```
+
 ## Key Docs (read before building)
 
 All in `/docs`:
