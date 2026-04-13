@@ -5,11 +5,36 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* === BoardIQ Color System === */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+
+  /* Ember accent — used in ~5% of screen */
+  --color-ember: #C2410C;
+  --color-ember-muted: #9A3412;
+  --color-ember-tint: #FFF7ED;
+  --color-ember-border: #FDBA74;
+
+  /* Warm neutral palette */
+  --color-paper: #FAF9F7;
+  --color-paper-dark: #F5F3F0;
+  --color-surface: #FFFFFF;
+  --color-border-main: #E8E5E0;
+  --color-border-light: #F0EEEA;
+
+  /* Ink palette */
+  --color-ink: #1A1A1A;
+  --color-ink-secondary: #5C5C5C;
+  --color-ink-muted: #8C8C8C;
+  --color-ink-faint: #B3B3B3;
+
+  /* Typography — literal font names for Tailwind v4 @theme inline */
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --font-heading: "Instrument Serif", Georgia, "Times New Roman", serif;
+
+  /* shadcn color mappings */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +64,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radius — 8px base for BoardIQ cards */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,82 +76,76 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* BoardIQ light theme — warm off-white, no cool greys */
+  --background: #FAF9F7;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #C2410C;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F3F0;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F5F3F0;
+  --muted-foreground: #8C8C8C;
+  --accent: #FFF7ED;
+  --accent-foreground: #9A3412;
+  --destructive: #DC2626;
+  --border: #E8E5E0;
+  --input: #E8E5E0;
+  --ring: #C2410C;
+  --chart-1: #C2410C;
+  --chart-2: #8C8C8C;
+  --chart-3: #5C5C5C;
+  --chart-4: #B3B3B3;
+  --chart-5: #1A1A1A;
+  --radius: 0.5rem;
+  --sidebar: #FAF9F7;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #C2410C;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFF7ED;
+  --sidebar-accent-foreground: #9A3412;
+  --sidebar-border: #E8E5E0;
+  --sidebar-ring: #C2410C;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border-main outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-paper text-ink font-sans;
+    font-size: 13px;
+    line-height: 1.65;
   }
   html {
     @apply font-sans;
   }
+
+  /* BoardIQ typography scale */
+  h1 {
+    @apply font-display text-[38px] font-normal tracking-tight;
+    letter-spacing: -0.5px;
+  }
+  h2 {
+    @apply font-display text-[20px] font-normal;
+  }
+  h3 {
+    @apply font-display text-[16px] font-normal;
+  }
+}
+
+/* Transitions — 150ms ease, no bounce */
+* {
+  transition-timing-function: ease;
+  transition-duration: 0ms;
+}
+
+/* Max content width utility */
+.content-width {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
