@@ -6,8 +6,10 @@ import { TabBar } from '@/components/shared/TabBar'
 import { Badge } from '@/components/shared/Badge'
 import { DocumentRow } from './DocumentRow'
 import { IQPanel } from './IQPanel'
+import { IQChat } from './IQChat'
 import { VoteCard } from './VoteCard'
 import { useDocumentReads, useDataOperations } from '@/hooks/useData'
+import { useRole } from '@/hooks/useRole'
 import type { AgendaItem } from '@/lib/types'
 
 interface DetailSlideOverProps {
@@ -162,17 +164,20 @@ function DocumentsTab({
 }
 
 function IQTab({ item, userId }: { item: AgendaItem; userId: string }) {
-  if (!item.iqAnalysis) {
-    return <p className="text-[13px] text-ink-muted">No IQ analysis available for this item.</p>
-  }
+  const { currentRole } = useRole()
+  const chatRole = currentRole === 'executive' ? 'executive' : 'director'
 
   return (
     <div>
-      <IQPanel itemId={item.id} userId={userId} />
-      <div className="mt-6 pt-4 border-t border-border-light">
-        <p className="text-xs text-ink-faint">
-          IQ Chat coming soon — ask follow-up questions about this item.
+      {item.iqAnalysis && (
+        <IQPanel itemId={item.id} userId={userId} />
+      )}
+
+      <div className={item.iqAnalysis ? 'mt-6 pt-4 border-t border-border-light' : ''}>
+        <p className="text-[10px] uppercase tracking-[1.5px] font-bold text-ink-muted mb-3">
+          Ask IQ
         </p>
+        <IQChat itemId={item.id} userRole={chatRole} />
       </div>
     </div>
   )

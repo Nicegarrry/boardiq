@@ -15,7 +15,7 @@ This document tracks all security and privacy design choices made during BoardIQ
 ### SD-002: API key stored server-side only
 **Decision:** `ANTHROPIC_API_KEY` is stored as a Vercel environment variable and accessed only in the Next.js API route handler (`/api/iq-chat`). Never exposed to the client.
 **Rationale:** Client-side API key exposure would allow key theft and abuse.
-**Implementation:** Key read via `process.env.ANTHROPIC_API_KEY` in route.ts only.
+**Implementation:** Confirmed implemented. Key read via `process.env.ANTHROPIC_API_KEY` in `src/app/api/iq-chat/route.ts` only. The route handler validates the key exists before making API calls and returns a 500 error with a helpful message if missing. The client component (`src/components/meeting/IQChat.tsx`) calls the API route via `fetch('/api/iq-chat')` and never touches the key directly.
 
 ### SD-003: No PII in client-side storage
 **Decision:** No personal data stored in localStorage, sessionStorage, or cookies in Tier 1.
