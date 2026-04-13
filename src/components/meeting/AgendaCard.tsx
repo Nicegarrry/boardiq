@@ -14,21 +14,25 @@ import type { AgendaItem } from '@/lib/types'
 interface AgendaCardProps {
   item: AgendaItem
   isExpanded: boolean
+  isSelected?: boolean
   onToggle: () => void
   onOpenDetail: (item: AgendaItem) => void
   mode: 'prep' | 'day'
   userId: string
   meetingId: string
+  compact?: boolean
 }
 
 export function AgendaCard({
   item,
   isExpanded,
+  isSelected,
   onToggle,
   onOpenDetail,
   mode,
   userId,
   meetingId,
+  compact,
 }: AgendaCardProps) {
   const reads = useDocumentReads(meetingId, userId)
   const ops = useDataOperations()
@@ -50,7 +54,8 @@ export function AgendaCard({
     <Card
       className={cn(
         'mb-2.5',
-        isExpanded && 'border-ink-faint'
+        isExpanded && 'border-ink-faint',
+        isSelected && 'border-l-2 border-l-ember'
       )}
     >
       {/* Collapsed header -- always visible */}
@@ -114,7 +119,14 @@ export function AgendaCard({
       </button>
 
       {/* Expanded content */}
-      {isExpanded && (
+      {isExpanded && compact && (
+        <div className="mt-3 pt-3 border-t border-border-light">
+          <p className="text-[13px] leading-[1.65] text-ink-secondary">
+            {item.description}
+          </p>
+        </div>
+      )}
+      {isExpanded && !compact && (
         <div className="mt-3 pt-3 border-t border-border-light">
           {/* Description */}
           <p className="text-[13px] leading-[1.65] text-ink-secondary mb-3">
