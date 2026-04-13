@@ -28,7 +28,7 @@ import {
   useMockDataOperations,
 } from './useMockData';
 
-const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE || 'mock';
+const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE === 'supabase' ? 'supabase' : 'mock';
 
 // ── Read Hooks ──
 
