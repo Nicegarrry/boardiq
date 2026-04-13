@@ -201,7 +201,7 @@ export function MeetingBriefing() {
           </div>
 
           {/* Right pane — persistent detail */}
-          <div className="w-[440px] shrink-0 border-l border-border-main bg-surface h-[calc(100vh-56px)] sticky top-[56px] overflow-hidden">
+          <div className="w-[500px] shrink-0 border-l border-border-main bg-surface h-[calc(100vh-56px)] sticky top-[56px] overflow-hidden">
             {detailItem ? (
               <DetailPane
                 item={detailItem}

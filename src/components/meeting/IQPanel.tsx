@@ -9,9 +9,10 @@ import type { IQClaim, IQAssumption, IQQuestion } from '@/lib/types'
 interface IQPanelProps {
   itemId: string
   userId: string
+  inline?: boolean
 }
 
-export function IQPanel({ itemId, userId }: IQPanelProps) {
+export function IQPanel({ itemId, userId, inline }: IQPanelProps) {
   const analysis = useIQAnalysis(itemId)
   const questions = useIQQuestions(itemId)
   const ops = useDataOperations()
@@ -41,7 +42,7 @@ export function IQPanel({ itemId, userId }: IQPanelProps) {
   const visibleQuestions = questions.filter((q) => !dismissed.has(q.id))
 
   return (
-    <div className="mt-3 pt-3 border-t border-border-light">
+    <div className={inline ? '' : 'mt-3 pt-3 border-t border-border-light'}>
       <IQBadge severity={analysis.severity} headline={analysis.headline} className="mb-2" />
       <p className="text-[13px] leading-[1.65] text-ink-secondary mb-3">
         {analysis.detail}
