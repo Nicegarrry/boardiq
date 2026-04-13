@@ -1,0 +1,21 @@
+# BoardIQ — Local Development
+#
+# Supabase local dev is managed by the Supabase CLI, which orchestrates
+# its own Docker containers (postgres, auth, storage, studio, realtime, etc).
+#
+# Usage:
+#   npx supabase start        # Start all services
+#   npx supabase stop         # Stop all services
+#   npx supabase db reset     # Reset DB and re-run migrations + seed
+#
+# Endpoints (after `supabase start`):
+#   Studio:   http://localhost:54323
+#   API:      http://localhost:54321
+#   DB:       postgresql://postgres:postgres@localhost:54322/postgres
+#   Inbucket: http://localhost:54324  (email testing)
+#
+# This file is intentionally minimal — Supabase CLI manages the stack.
+# It exists to document the architecture for developers.
+
+version: '3.8'
+services: {}

@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop",
+    "db:reset": "npx supabase db reset",
+    "db:seed": "npx supabase db reset --seed-only",
+    "db:migrate": "npx supabase migration up",
+    "db:studio": "open http://localhost:54323"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.88.0",
