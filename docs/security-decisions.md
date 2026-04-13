@@ -67,9 +67,30 @@ This document tracks all security and privacy design choices made during BoardIQ
 
 ---
 
+### SD-012: Magic link authentication — no passwords stored
+**Decision:** Authentication uses Supabase Auth magic links (email OTP) exclusively. No password field exists in the login UI. No password hashes are stored in the database.
+**Rationale:** Eliminates credential theft risk entirely. No passwords means no password database to breach, no weak passwords to exploit, no credential stuffing attacks. Magic links are time-limited and single-use.
+**Implementation:** `src/lib/auth.ts` exposes `signInWithMagicLink()` which calls `supabase.auth.signInWithOtp()`. The login page at `src/app/login/page.tsx` collects only an email address. The magic link redirects to `/auth/callback` which exchanges the code for a session.
+
+### SD-013: Session cookies — httpOnly, secure, sameSite=lax
+**Decision:** Session tokens are stored in httpOnly cookies with secure and sameSite=lax attributes. Not accessible to client-side JavaScript.
+**Rationale:** httpOnly prevents XSS attacks from stealing session tokens. Secure ensures cookies are only sent over HTTPS. SameSite=lax prevents CSRF while allowing normal navigation flows. This is handled automatically by `@supabase/ssr`'s cookie management.
+**Implementation:** `src/middleware.ts` uses `createServerClient` from `@supabase/ssr` which manages cookie get/set operations with secure defaults. The middleware refreshes the session on every request to keep cookies in sync.
+
+### SD-014: Auth middleware bypassed when NEXT_PUBLIC_DATA_SOURCE=mock
+**Decision:** When `NEXT_PUBLIC_DATA_SOURCE` is not set to `supabase`, the auth middleware returns `NextResponse.next()` immediately, allowing unauthenticated access to all routes.
+**Rationale:** Demo mode (Tier 1) uses synthetic data and a client-side role switcher. Requiring authentication for demos would add friction without security value — there is no real data to protect. The demo is clearly labelled and contains only Coastal Health Foundation mock data.
+**Risk:** If `NEXT_PUBLIC_DATA_SOURCE` is accidentally left as `mock` in production, auth is bypassed.
+**Mitigation:** Vercel environment variables are set per-environment. Production deployment checklist includes verifying `NEXT_PUBLIC_DATA_SOURCE=supabase`.
+
+### SD-015: Document storage via Supabase Storage with signed URLs
+**Decision:** Board documents are stored in a private Supabase Storage bucket (`documents`). Access is via signed URLs with 1-hour expiry. No public document URLs are generated in application code.
+**Rationale:** Board documents are highly confidential (financial reports, CEO evaluations, legal opinions). Signed URLs ensure that document access requires active authentication and that leaked URLs expire quickly. The 1-hour window balances usability (long enough to read a document) with security (short enough to limit exposure from a leaked link).
+**Implementation:** `src/lib/storage.ts` provides `uploadDocument()`, `downloadDocument()` (signed URL), and `deleteDocument()`. The `getDocumentPublicUrl()` utility exists but is not used in standard flows — it is available only for explicitly public assets if ever needed.
+
+---
+
 ## Phase 2: Backend (Tier 2) — Remaining Planned Entries
 
-- SD-012: Magic link authentication (no passwords) / Session cookies (httpOnly, secure, sameSite=lax)
-- SD-013: Document storage RLS (matching document table policies)
-- SD-014: Document text sent only to Anthropic API (no third-party training)
-- SD-015: Data retention policies per entity type
+- SD-016: Document text sent only to Anthropic API (no third-party training)
+- SD-017: Data retention policies per entity type
