@@ -10,17 +10,6 @@
 -- FUNCTIONS
 -- ============================================================================
 
--- Helper: returns org IDs where the current auth user has an active membership.
--- Used by RLS policies throughout the schema.
-CREATE OR REPLACE FUNCTION public.auth_org_ids()
-RETURNS uuid[] AS $$
-  SELECT coalesce(array_agg(org_id), '{}')
-  FROM public.org_memberships
-  WHERE user_id = auth.uid()
-    AND status = 'active'
-    AND deleted_at IS NULL
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
-
 -- Trigger function: auto-update updated_at on row modification.
 CREATE OR REPLACE FUNCTION public.update_updated_at()
 RETURNS TRIGGER AS $$
@@ -95,6 +84,18 @@ CREATE TABLE public.org_memberships (
 CREATE TRIGGER trg_org_memberships_updated_at
   BEFORE UPDATE ON public.org_memberships
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- Helper: returns org IDs where the current auth user has an active membership.
+-- Used by RLS policies throughout the schema.
+-- Defined after org_memberships table exists.
+CREATE OR REPLACE FUNCTION public.auth_org_ids()
+RETURNS uuid[] AS $$
+  SELECT coalesce(array_agg(org_id), '{}')
+  FROM public.org_memberships
+  WHERE user_id = auth.uid()
+    AND status = 'active'
+    AND deleted_at IS NULL
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 -- 1.4 permission_overrides
 CREATE TABLE public.permission_overrides (
